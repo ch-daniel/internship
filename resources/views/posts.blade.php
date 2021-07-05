@@ -6,13 +6,32 @@
 
 
     <body>
+      @guest
+        <a href="/register">Register</a>
+        <a href="/login">LogIn</a>
+      @endguest
+
+      @auth
+        <span>Welcome, {{ auth()->user()->name}}</span>
+        <form method="post" action="/logout">
+          @csrf
+          <button type="submit">Log Out</button>
+
+        </form>
+      @endauth
+
+      @if (session()->has('success'))
+        <div class="fixed bg-blue-500 text-white py-2 px-4 rounded-xl bottom-3 right-3 text-sm">
+          <p>{{ session('success')}}</p>
+        </div>
+      @endif
         <h1 style="color: green;">
-        @if(session('message')) 
+        @if(session('message'))
             {{session('message')}}
-        
+
         @endif
         </h1>
-        
+
 
       <?php foreach ($posts as $post) : ?>
       <article>
@@ -31,15 +50,33 @@
         </div>
       </article>
         <?php endforeach; ?>
+      @auth  
      <div class="workspace">
           <p>Create a new post:</p>
-        <form action="submit" method="POST">
+        <form action="/createpost" method="POST">
             @csrf
-            <input type="text" name="title" placeholder="Post title">
-            <input type="text" name="author" placeholder="Author's name">
+            <input
+            type="text"
+            name="title"
+            value="{{ old('title')}}"
+            id="title"
+            placeholder="Post title">
+            @error('title')
+              <p>{{ $message }}</p>
+            @enderror
             <label for="body">Body:</label>
-            <textarea class="last" name="body" colls="30" placeholder="Post body"></textarea>
+            <textarea
+            class="last"
+            name="body"
+            colls="30"
+            id="body"
+            value="{{ old('body')}}"
+            placeholder="Post body (max 1024 characters)"></textarea>
+            @error('body')
+              <p>{{ $message }}</p>
+            @enderror
             <button type="submit" name="submit">Submit Post</button>
         </form>
-      </div> 
+      </div>
+      @endauth
     </body>

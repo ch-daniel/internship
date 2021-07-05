@@ -2,7 +2,9 @@
 use App\Models\Post;
 use App\Http\Controllers\Abc;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\RegisterController;
+use App\Http\Controllers\SessionsController;
+use App\Http\Controllers\PostController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -26,7 +28,9 @@ Route::get('posts/{post:slug}', function(Post $post) {
     ]);
 });
 
-Route::post('/submit', function() {
+Route::post('createpost', [PostController::class, 'store'])->middleware('auth');
+
+/*Route::post('/submit', function() {
     $post = new Post();
     $post->title = request('title');
     $post->slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $post->title)));
@@ -46,4 +50,11 @@ Route::post('/submit', function() {
         $message = "There is already a Post with that title";
         return redirect('/')->with('message', 'Post Title Exists');
     }
-});
+}); */
+
+Route::get('register', [RegisterController::class, 'create'])->middleware('guest');
+Route::post('register', [RegisterController::class, 'store'])->middleware('guest');
+
+Route::get('login', [SessionsController::class, 'create'])->middleware('guest');
+Route::post('login', [SessionsController::class, 'store'])->middleware('guest');
+Route::post('logout', [SessionsController::class, 'destroy'])->middleware('auth');
